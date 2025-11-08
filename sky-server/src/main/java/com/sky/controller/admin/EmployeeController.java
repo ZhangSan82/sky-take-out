@@ -1,6 +1,10 @@
 package com.sky.controller.admin;
 
+import com.github.xiaoymin.knife4j.core.util.StrUtil;
 import com.sky.constant.JwtClaimsConstant;
+import com.sky.constant.PasswordConstant;
+import com.sky.constant.StatusConstant;
+import com.sky.context.BaseContext;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.dto.EmployeePageQueryDTO;
@@ -15,9 +19,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -82,7 +89,24 @@ public class EmployeeController {
     @ApiOperation("新增员工")
     public Result save(@RequestBody EmployeeDTO employeeDTO) {
         log.info("添加员工{}", employeeDTO);
-        employeeService.save(employeeDTO);
+        //employeeService.save(employeeDTO);
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee);
+        //设置状态
+        employee.setStatus(StatusConstant.ENABLE);
+
+        //设置密码
+        employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
+
+        //设置时间
+        employee.setCreateTime(LocalDateTime.now());
+        employee.setUpdateTime(LocalDateTime.now());
+
+        //TODO后期需要更改
+        employee.setCreateUser(BaseContext.getCurrentId());
+        employee.setUpdateUser(BaseContext.getCurrentId());
+        employeeService.save(employee);
+
         return Result.success();
     }
 
@@ -97,16 +121,49 @@ public class EmployeeController {
         PageResult pageResult = employeeService.pageQuery(employeePageQueryDTO);
         return Result.success(pageResult);
     }
-
-
-    /*
-    启用禁用员工账号
-     */
+//
+//
+//    /*
+//    启用禁用员工账号
+//     */
     @PostMapping("/status/{status}")
     @ApiOperation("启用禁用员工账号")
     public Result startOrStop(@PathVariable Integer status,Long id) {
         log.info("启用禁用员工账号,{},{}", status, id);
-        employeeService.startOrStop(status,id);
+        //只更新你显式 set 的那几列
+        employeeService.lambdaUpdate()
+                .eq(Employee::getId, id)
+                .set(Employee::getStatus, status)
+                .set(Employee::getUpdateTime, LocalDateTime.now())
+                .set(Employee::getUpdateUser, BaseContext.getCurrentId())
+                .update();          // 这一步才真正执行 SQL
+        return Result.success();
+    }
+
+    @GetMapping("/{id}")
+    @ApiOperation("根据id查询")
+    public Result<Employee> get(@PathVariable Long id) {
+        log.info("根据id查询:{}",id);
+        Employee employee = employeeService.getById(id);
+        employee.setPassword("****");
+        return Result.success(employee);
+    }
+
+    @PutMapping
+    @ApiOperation("编辑员工")
+    public Result updateById(@RequestBody EmployeeDTO employeeDTO) {
+        log.info("根据id:{},更新员工",employeeDTO.getId());
+        Employee employee = employeeService.getById(employeeDTO.getId());
+        employeeService.lambdaUpdate()
+                .eq(Employee::getId, employeeDTO.getId())
+                .set(StrUtil.isNotBlank(employeeDTO.getName()),Employee::getName, employeeDTO.getName())
+                .set(StrUtil.isNotBlank(employeeDTO.getUsername()),Employee::getUsername, employeeDTO.getUsername())
+                .set(StrUtil.isNotBlank(employeeDTO.getIdNumber()),Employee::getIdNumber, employeeDTO.getIdNumber())
+                .set(StrUtil.isNotBlank(employeeDTO.getSex()),Employee::getSex,employeeDTO.getSex())
+                .set(StrUtil.isNotBlank(employeeDTO.getPhone()),Employee::getPhone,employeeDTO.getPhone())
+                .set(Employee::getUpdateTime, LocalDateTime.now())
+                .set(Employee::getUpdateUser, BaseContext.getCurrentId())
+                .update();
         return Result.success();
     }
 }

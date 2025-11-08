@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
@@ -24,7 +25,7 @@ import org.springframework.util.DigestUtils;
 import java.time.LocalDateTime;
 
 @Service
-public class EmployeeServiceImpl implements EmployeeService {
+public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper,Employee> implements EmployeeService {
 
     @Autowired
     private EmployeeMapper employeeMapper;
@@ -68,30 +69,30 @@ public class EmployeeServiceImpl implements EmployeeService {
     /*
     新增员工
      */
-    @Override
-    public void save(EmployeeDTO employeeDTO) {
-        Employee employee = new Employee();
-
-        //对象属性拷贝
-        BeanUtils.copyProperties(employeeDTO, employee);
-
-        //设置状态
-        employee.setStatus(StatusConstant.ENABLE);
-
-        //设置密码
-        employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
-
-        //设置时间
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
-
-        //TODO后期需要更改
-        employee.setCreateUser(BaseContext.getCurrentId());
-        employee.setUpdateUser(BaseContext.getCurrentId());
-
-        employeeMapper.insert(employee);
-    }
-
+//    @Override
+//    public void save(EmployeeDTO employeeDTO) {
+//        Employee employee = new Employee();
+//
+//        //对象属性拷贝
+//        BeanUtils.copyProperties(employeeDTO, employee);
+//
+//        //设置状态
+//        employee.setStatus(StatusConstant.ENABLE);
+//
+//        //设置密码
+//        employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
+//
+//        //设置时间
+//        employee.setCreateTime(LocalDateTime.now());
+//        employee.setUpdateTime(LocalDateTime.now());
+//
+//        //TODO后期需要更改
+//        employee.setCreateUser(BaseContext.getCurrentId());
+//        employee.setUpdateUser(BaseContext.getCurrentId());
+//
+//        employeeMapper.insert(employee);
+//    }
+//
     @Override
     public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
         PageHelper.startPage(employeePageQueryDTO.getPage(),employeePageQueryDTO.getPageSize());
@@ -99,19 +100,19 @@ public class EmployeeServiceImpl implements EmployeeService {
         Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO);
         return new PageResult(page.getTotal(),page.getResult());
     }
-
-    @Override
-    public void startOrStop(Integer status, Long id) {
-//        Employee employee = new Employee();
-//        employee.setStatus(status);
-//        employee.setId(id);
-
-        Employee employee = Employee.builder()
-                .status(status)
-                .id(id)
-                .build();
-
-        employeeMapper.update(employee);
-    }
+//
+//    @Override
+//    public void startOrStop(Integer status, Long id) {
+////        Employee employee = new Employee();
+////        employee.setStatus(status);
+////        employee.setId(id);
+//
+//        Employee employee = Employee.builder()
+//                .status(status)
+//                .id(id)
+//                .build();
+//
+//        employeeMapper.update(employee);
+//    }
 
 }
