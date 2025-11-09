@@ -1,5 +1,6 @@
 package com.sky.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,6 +26,7 @@ public class Dish implements Serializable {
     private String name;
 
     //菜品分类id
+    @TableField("category_id")
     private Long categoryId;
 
     //菜品价格
