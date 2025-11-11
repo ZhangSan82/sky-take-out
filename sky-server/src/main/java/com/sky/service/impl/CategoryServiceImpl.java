@@ -46,8 +46,10 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         return new PageResult(page.getTotal(), page.getResult());
     }
 
-    /*
-    删除分类
+    /**
+     * 根据id删除
+     *
+     * @param id
      */
     @Override
     public void deleteById(Long id) {

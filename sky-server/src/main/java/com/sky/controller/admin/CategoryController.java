@@ -4,11 +4,13 @@ package com.sky.controller.admin;
 import ch.qos.logback.core.joran.util.beans.BeanUtil;
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.github.xiaoymin.knife4j.core.util.StrUtil;
+import com.sky.annotation.AutoFill;
 import com.sky.constant.StatusConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.CategoryDTO;
 import com.sky.dto.CategoryPageQueryDTO;
 import com.sky.entity.Category;
+import com.sky.enumeration.OperationType;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.CategoryService;
@@ -32,11 +34,14 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    /*
-    新增分类
+    /**
+     * 新增分类
+     * @param categoryDTO
+     * @return
      */
     @PostMapping
     @ApiOperation("新增分类")
+    //@AutoFill(value = OperationType.INSERT)
     public Result<String> save(@RequestBody CategoryDTO categoryDTO){
         log.info("新增分类：{}", categoryDTO);
         Category category = new Category();
@@ -83,6 +88,7 @@ public class CategoryController {
      */
     @PutMapping
     @ApiOperation("修改分类")
+    //@AutoFill(value = OperationType.UPDATE)
     public Result<String> update(@RequestBody CategoryDTO categoryDTO){
         log.info("根据id:{},修改分类", categoryDTO.getId());
         Category category = new Category();
@@ -90,7 +96,7 @@ public class CategoryController {
                  .eq(Category::getId, categoryDTO.getId())
                  .set(Category::getName, categoryDTO.getName())
                  .set(Category::getSort, categoryDTO.getSort())
-                 .set(Category::getType, categoryDTO.getType())
+                // .set(Category::getType, categoryDTO.getType())
                  .set(Category::getUpdateTime, LocalDateTime.now())
                  .set(Category::getUpdateUser, BaseContext.getCurrentId())
                  .update();
@@ -106,6 +112,7 @@ public class CategoryController {
      */
     @PostMapping("/status/{status}")
     @ApiOperation("启用禁用分类")
+    //@AutoFill(value = OperationType.UPDATE)
     public Result<String> startOrStop(@PathVariable("status") Integer status, Long id){
         log.info("根据id:{},控制状态",id);
         categoryService.lambdaUpdate()

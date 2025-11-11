@@ -1,6 +1,7 @@
 package com.sky.controller.admin;
 
 import com.github.xiaoymin.knife4j.core.util.StrUtil;
+import com.sky.annotation.AutoFill;
 import com.sky.constant.JwtClaimsConstant;
 import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
@@ -9,6 +10,7 @@ import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
 import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
+import com.sky.enumeration.OperationType;
 import com.sky.properties.JwtProperties;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
@@ -87,6 +89,7 @@ public class EmployeeController {
 
     @PostMapping
     @ApiOperation("新增员工")
+    //@AutoFill(value = OperationType.UPDATE)
     public Result save(@RequestBody EmployeeDTO employeeDTO) {
         log.info("添加员工{}", employeeDTO);
         //employeeService.save(employeeDTO);
@@ -128,6 +131,7 @@ public class EmployeeController {
 //     */
     @PostMapping("/status/{status}")
     @ApiOperation("启用禁用员工账号")
+    //@AutoFill(value = OperationType.UPDATE)
     public Result startOrStop(@PathVariable Integer status,Long id) {
         log.info("启用禁用员工账号,{},{}", status, id);
         //只更新你显式 set 的那几列
@@ -151,6 +155,7 @@ public class EmployeeController {
 
     @PutMapping
     @ApiOperation("编辑员工")
+//    @AutoFill(value = OperationType.UPDATE)
     public Result updateById(@RequestBody EmployeeDTO employeeDTO) {
         log.info("根据id:{},更新员工",employeeDTO.getId());
         Employee employee = employeeService.getById(employeeDTO.getId());
