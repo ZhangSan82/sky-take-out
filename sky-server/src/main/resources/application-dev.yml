@@ -12,3 +12,10 @@ sky:
     access-key-id: LTAI5t79u3y4PhWkPzafLZni
     access-key-secret: YxCMs6LMrt8o3Fqo0l9SLQqbyZLWx0
     bucket-name: web-talis800
+  redis:
+    host: localhost
+    port: 6379
+
+  wechat:
+    appid: wxda49385df37268f1
+    secret: b849c61abc35990065d6d27efcad6c8a

@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@RestController
+@RestController("adminCategoryController")
 @RequestMapping("/admin/category")
 @Api(tags = "分类相关接口")
 @Slf4j
