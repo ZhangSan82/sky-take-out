@@ -113,7 +113,7 @@ public class ShoppingCartController {
     public Result clean(){
 
         shoppingCartService.lambdaUpdate()
-                .set(ShoppingCart::getUserId,4L)
+                .eq(ShoppingCart::getUserId,4L)
                 .remove();
         return Result.success();
     }
